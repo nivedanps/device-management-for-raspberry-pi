@@ -1,251 +1,32 @@
-📊 Exploratory Data Analysis (EDA)
-Exploratory Data Analysis (EDA) is the process of investigating datasets to summarize their main characteristics, often using statistical methods and visualizations. It plays a critical role in identifying patterns, anomalies, and relationships that guide preprocessing and model-building decisions.
+# Hi, I'm Nivedan P S 👋
 
-🧠 Why EDA Matters
-EDA is not just visualization — it is decision-making.
+> Aspiring Software Engineer • CS Pre-Final Year @ MIT Mysuru • AI & Web Dev Enthusiast
 
+![Python](https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&logoColor=white)
+![Java](https://img.shields.io/badge/Java-ED8B00?style=flat&logo=openjdk&logoColor=white)
+![PHP](https://img.shields.io/badge/PHP-777BB4?style=flat&logo=php&logoColor=white)
+![React](https://img.shields.io/badge/React-20232A?style=flat&logo=react&logoColor=61DAFB)
+![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat&logo=html5&logoColor=white)
+![AWS](https://img.shields.io/badge/AWS-232F3E?style=flat&logo=amazonaws&logoColor=white)
 
-Helps understand data distribution and structure
+---
 
+## About me
 
-Detects missing values, noise, and inconsistencies
+Computer Science undergrad at **Maharaja Institute of Technology, Mysuru** (CGPA: 8.43).
+I enjoy building practical web solutions and exploring the ever-growing AI landscape.
+Certified in AWS Cloud, IBM AI Fundamentals, React, and Cybersecurity.
 
+- 🎓 Pre-final year B.E. in Computer Science
+- 🤖 Good working knowledge of modern AI tools
+- 🏏 Cricket & Kabaddi player off the keyboard
+- 📍 Mysuru, Karnataka
 
-Identifies feature importance and relationships
+---
 
+## 🔨 Projects
 
-Supports feature engineering and selection
-
-
-Prevents incorrect assumptions before modeling
-
-
-
-📁 Dataset Understanding
-AttributeDescriptionRowsXXXXXColumnsXXXXXData TypesNumerical, Categorical, BooleanTarget VariableYour_Target_Column
-🔎 Feature Types
-
-
-Numerical Features → Continuous & Discrete values
-
-
-Categorical Features → Labels, categories
-
-
-Datetime Features (if applicable)
-
-
-Target Variable → Output we aim to predict
-
-
-
-🧹 Data Preprocessing & Cleaning
-🔸 Missing Values Handling
-
-
-Identified missing values using .isnull()
-
-
-Strategies applied:
-
-
-Mean / Median imputation (numerical)
-
-
-Mode imputation (categorical)
-
-
-Dropped columns with excessive missing data
-
-
-
-
-🔸 Duplicate Records
-
-
-Removed duplicate entries using .drop_duplicates()
-
-
-🔸 Data Type Conversion
-
-
-Converted columns to appropriate formats (e.g., int, float, category)
-
-
-
-📊 Univariate Analysis
-Univariate analysis focuses on one variable at a time.
-📌 Techniques Used
-
-
-Histograms → Understand distribution
-
-
-KDE plots → Density estimation
-
-
-Count plots → Frequency of categories
-
-
-Box plots → Detect outliers
-
-
-🔍 Observations
-
-
-Some features show normal distribution
-
-
-Some are skewed (left/right)
-
-
-Presence of outliers in key variables
-
-
-
-🔗 Bivariate Analysis
-Bivariate analysis examines relationships between two variables.
-📌 Techniques Used
-
-
-Scatter plots → Relationship between numerical variables
-
-
-Box plots → Categorical vs numerical comparison
-
-
-Correlation matrix
-
-
-🔥 Correlation Insights
-
-
-Strong positive/negative correlations identified
-
-
-Weak correlations removed to reduce noise
-
-
-Multicollinearity checked
-
-
-
-🔥 Multivariate Analysis
-
-
-Heatmaps for correlation visualization
-
-
-Pair plots for multiple variable relationships
-
-
-Feature interaction analysis
-
-
-
-📉 Outlier Detection
-Outliers were identified using:
-
-
-IQR (Interquartile Range)
-
-
-Box plots
-
-
-Z-score method
-
-
-⚠️ Action Taken
-
-
-Removed extreme outliers where necessary
-
-
-Retained meaningful outliers (domain-based decision)
-
-
-
-📊 Feature Engineering
-
-
-Created new features based on domain logic
-
-
-Encoded categorical variables:
-
-
-Label Encoding
-
-
-One-Hot Encoding
-
-
-
-
-Normalized / Standardized numerical features
-
-
-
-📈 Visualization Libraries Used
-
-
-Pandas → Data handling
-
-
-Matplotlib → Basic plots
-
-
-Seaborn → Advanced visualizations
-
-
-
-🧩 Key Insights from EDA
-
-
-Important features influencing the target variable were identified
-
-
-Data imbalance detected (if applicable)
-
-
-Noise and irrelevant features removed
-
-
-Strong correlations helped in feature selection
-
-
-Clean dataset prepared for modeling
-
-
-
-🚀 Impact on Model Building
-EDA directly improved:
-
-
-Model accuracy
-
-
-Training efficiency
-
-
-Feature selection strategy
-
-
-Overall robustness of the system
-
-
-
-📌 Final Thoughts
-EDA transformed raw data into meaningful insights, enabling better decision-making and laying a strong foundation for building reliable machine learning models.
-
-✅ If you want next-level README:
-
-
-I can add real code snippets (EDA in Python)
-
-
-Or create a complete README with badges, setup, results, and screenshots
-
-
-Or tailor this exactly for your project (just tell your dataset topic 👍)
+| Project | Description | Stack |
+|--------|-------------|-------|
+| [🦁 Zoo Management System](https://github.com/nivedanps) | UI/UX system for managing animal & zookeeper records with separate portals for visitors and admin | PHP, HTML |
+| [📋 Smart Faculty Feedback Portal](https://github.com/nivedanps/project.git) |
