@@ -92,31 +92,4 @@ README.md                           # This file
 
 ---
 
-## How to Run
 
-1. Upload `Diwali Sales Data.csv` to `/content/` (Google Colab) or update the file path.
-2. Open `project_on_data_explorator1.ipynb` in Jupyter Notebook or Google Colab.
-3. Run all cells from top to bottom (`Runtime → Run all` in Colab).
-
-### Requirements
-
-```bash
-pip install numpy pandas matplotlib seaborn
-```
-
----
-
-## Key Insights (from analysis)
-
-- **Female buyers** tend to purchase more and spend more than male buyers.
-- **Age group 26–35** is the most active purchasing segment.
-- **Uttar Pradesh, Maharashtra, and Karnataka** lead in both orders and revenue.
-- **Married women** show higher spending compared to other groups.
-- **IT, Healthcare, and Aviation** professionals are top spenders by occupation.
-- **Food, Clothing, and Electronics** are the highest-selling product categories.
-
----
-
-## Author
-
-Student project on Data Exploration using Python and Seaborn.
