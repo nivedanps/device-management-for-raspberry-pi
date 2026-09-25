@@ -1,193 +1,122 @@
-%-------------------------
-% Resume in Latex
-% Based off of: https://github.com/sb2nov/resume (Jake Gutierrez template)
-%------------------------
+# Diwali Sales Data — Exploratory Data Analysis (EDA)
 
-\documentclass[letterpaper,11pt]{article}
+A beginner-friendly data exploration project that analyses Diwali sales records to uncover purchasing patterns across gender, age, state, marital status, occupation, and product category.
 
-\usepackage{latexsym}
-\usepackage[empty]{fullpage}
-\usepackage{titlesec}
-\usepackage{marvosym}
-\usepackage[usenames,dvipsnames]{color}
-\usepackage{verbatim}
-\usepackage{enumitem}
-\usepackage[colorlinks=true, linkcolor=blue, urlcolor=blue, citecolor=blue]{hyperref}
-\usepackage{fancyhdr}
-\usepackage[english]{babel}
-\usepackage{tabularx}
-\usepackage{multicol}
-\setlength{\multicolsep}{-3.0pt}
-\setlength{\columnsep}{-1pt}
-\input{glyphtounicode}
+---
 
-\pagestyle{fancy}
-\fancyhf{} % clear all header and footer fields
-\fancyfoot{}
-\renewcommand{\headrulewidth}{0pt}
-\renewcommand{\footrulewidth}{0pt}
+## Project Overview
 
-% Adjust margins
-\addtolength{\oddsidemargin}{-0.6in}
-\addtolength{\evensidemargin}{-0.5in}
-\addtolength{\textwidth}{1.19in}
-\addtolength{\topmargin}{-.7in}
-\addtolength{\textheight}{1.4in}
+This notebook performs end-to-end EDA on a Diwali Sales dataset. It cleans the raw CSV data, then uses visualisations to answer questions such as:
 
-\urlstyle{same}
+- Which gender and age group spends the most?
+- Which states generate the highest orders and revenue?
+- How does marital status influence purchasing behaviour?
+- Which occupations and product categories drive the most sales?
 
-\raggedbottom
-\raggedright
-\setlength{\tabcolsep}{0in}
+---
 
-% Sections formatting
-\titleformat{\section}{
-  \vspace{-4pt}\scshape\raggedright\large\bfseries
-}{}{0em}{}[\color{black}\titlerule \vspace{-5pt}]
+## Dataset
 
-% Ensure that generated pdf is machine readable/ATS parsable
-\pdfgentounicode=1
+| Property | Details |
+|---|---|
+| File | `Diwali Sales Data.csv` |
+| Format | CSV (comma-separated values, unicode-escaped encoding) |
+| Key columns | `Gender`, `Age`, `Age Group`, `State`, `Marital_Status`, `Occupation`, `Product_Category`, `Product_ID`, `Orders`, `Amount` |
 
-%-------------------------
-% Custom commands
-\newcommand{\resumeItem}[1]{
-  \item\small{
-    {#1 \vspace{-2pt}}
-  }
-}
+> **Note:** Columns `Status` and `unnamed1` are dropped during cleaning as they are unrelated or blank.
 
-\newcommand{\resumeCompactItem}[1]{
-  \item[] \small #1
-}
+---
 
-\newcommand{\resumeSubheading}[4]{
-  \vspace{-2pt}\item
-    \begin{tabular*}{1.0\textwidth}[t]{l@{\extracolsep{\fill}}r}
-      \textbf{#1} & \textbf{\small #2} \\
-      \textit{\small#3} & \textit{\small #4} \\
-    \end{tabular*}\vspace{-7pt}
-}
+## Libraries Used
 
-\newcommand{\resumeProjectHeading}[2]{
-    \item
-    \begin{tabular*}{1.001\textwidth}{l@{\extracolsep{\fill}}r}
-      \small#1 & \textbf{\small #2}\\
-    \end{tabular*}\vspace{-7pt}
-}
+| Library | Purpose |
+|---|---|
+| `numpy` | Numerical operations |
+| `pandas` | Data loading, cleaning, and aggregation |
+| `matplotlib` | Base plotting |
+| `seaborn` | Statistical bar charts and count plots |
 
-\newcommand{\resumeSubItem}[1]{\resumeItem{#1}\vspace{-4pt}}
+---
 
-\renewcommand\labelitemi{$\vcenter{\hbox{\tiny$\bullet$}}$}
-\renewcommand\labelitemii{$\vcenter{\hbox{\tiny$\bullet$}}$}
+## Project Structure
 
-\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=0.0in, label={}]}
-\newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
-\newcommand{\resumeItemListStart}{\begin{itemize}}
-\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-5pt}}
+```
+project_on_data_explorator1.ipynb   # Main notebook
+Diwali Sales Data.csv               # Source dataset (place in /content/)
+README.md                           # This file
+```
 
-%-------------------------------------------
-%%%%%%  RESUME STARTS HERE  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+---
 
-\begin{document}
+## Steps Performed
 
-%----------HEADING----------
-\begin{center}
-    {\Huge \scshape Nivedan P S} \\ \vspace{4pt}
-    \small \Mobilefone\ +91 9740130224 ~ $|$ ~
-    \Letter\ \href{mailto:nivedanps1234@gmail.com}{nivedanps1234@gmail.com} ~ $|$ ~
-    \href{https://linkedin.com/in/nivedanps}{linkedin} ~ $|$ ~
-    \href{https://nivedanpsportfolio.vercel.app/}{portfolio} ~ $|$ ~
-    \href{https://github.com/nivedanps}{github}
-    \vspace{-8pt}
-\end{center}
+### 1. Data Loading
+- Import libraries
+- Read the CSV with `encoding='unicode_escape'`
 
-%-----------SUMMARY-----------
-\section{Summary}
-  \resumeSubHeadingListStart
-    \resumeItem{Final-year Computer Science undergraduate with hands-on project experience in AI-driven and web-based applications. Strong foundation in Python, Java, and database systems, with a growing interest in generative AI tools and cloud technologies. Quick learner, collaborative team member, and enthusiastic open-source contributor.}
-  \resumeSubHeadingListEnd
-\vspace{-13pt}
+### 2. Data Cleaning
+- Inspect shape, head, and info
+- Drop irrelevant columns (`Status`, `unnamed1`)
+- Remove null values with `dropna()`
+- Cast `Amount` column to integer
 
-%-----------EDUCATION-----------
-\section{Education}
-  \resumeSubHeadingListStart
-    \resumeSubheading
-      {Maharaja Institute of Technology, Mysuru}{2023 -- 2027}
-      {Bachelor of Engineering, Computer Science -- CGPA: 8.73}{Mysuru, India}
-    \resumeSubheading
-      {Sadvidya Semi-Residential College, Mysuru}{2022 -- 2023}
-      {Pre-University (PCMC) -- 84.16\%}{Mysuru, India}
-    \resumeSubheading
-      {Bharatiya Vidya Bhavan, Mysuru}{2020 -- 2021}
-      {High School (SSLC) -- 91.20\%}{Mysuru, India}
-  \resumeSubHeadingListEnd
-\vspace{-13pt}
+### 3. Exploratory Data Analysis
 
-%-----------PROJECTS-----------
-\section{Projects}
-    \resumeSubHeadingListStart
-      \resumeProjectHeading
-          {\textbf{\href{https://github.com/nivedanps/voxsynth}{Voxsynth}} $|$ \emph{Python, AI Agents, Text-to-Speech}}{Feb 2026}
-          \resumeItemListStart
-            \resumeItem{Built an autonomous multiplayer agent system that translates text to audio in real time across multiple languages simultaneously.}
-            \resumeItem{Designed the agent pipeline to coordinate translation and speech synthesis with minimal latency for a seamless multiplayer experience.}
-          \resumeItemListEnd
-          \vspace{-13pt}
-      \resumeProjectHeading
-          {\textbf{\href{https://github.com/nivedanps/Smart-feedback-faculty-portal}{Smart Faculty Feedback Portal}} $|$ \emph{ JavaScript, Web Development, Data Visualization}}{Jan 2026}
-          \resumeItemListStart
-            \resumeItem{Designed a web application to simplify collection and reporting of faculty feedback for academic institutions.}
-            \resumeItem{Enhanced decision-making for administrators through organized data visualization and analytics dashboards.}
-          \resumeItemListEnd
-          \vspace{-13pt}
-      \resumeProjectHeading
-          {\textbf{\href{https://github.com/nivedanps/zoomanager}{ZOO Database Management System}} $|$ \emph{ JavaScript, MySQL, Database Design}}{Dec 2025}
-          \resumeItemListStart
-            \resumeItem{Developed a database-driven system that simplifies animal records, feeding schedules, and staff management for a zoo.}
-            \resumeItem{Structured the database schema to streamline wildlife care administration and enable smarter, tech-driven operations.}
-          \resumeItemListEnd
-    \resumeSubHeadingListEnd
-\vspace{-15pt}
+#### Gender
+- Count plot of buyers by gender
+- Bar plot of total sales amount by gender
 
-%-----------TECHNICAL SKILLS-----------
-\section{Technical Skills}
- \begin{itemize}[leftmargin=0.15in, label={}]
-    \small{\item{
-     \textbf{Programming Languages}{: Python, C, Java} \\
-     \textbf{Technologies/Environment}{: MySQL, Git \& GitHub, Jupyter Notebook, VS Code, Antigravity, Web Hosting} \\
-     \textbf{Soft Skills}{: Mentoring, Problem Solving, Team Collaboration} \\
-    }}
- \end{itemize}
- \vspace{-16pt}
+#### Age & Age Group
+- Count plots for age and age group
+- Age group breakdown by gender
+- Total sales amount by age group
 
-%-----------CERTIFICATIONS \& COURSES-----------
-\section{Certifications \& Courses}
-  \begin{itemize}[leftmargin=0.15in, label={}, itemsep=-2pt]
-    \resumeCompactItem{\textbf{Introduction to Generative AI} -- 2026}
-    \resumeCompactItem{\textbf{Artificial Intelligence Fundamentals} -- 2025}
-    \resumeCompactItem{\textbf{AWS Cloud Practitioner Essentials} -- 2026}
-    \resumeCompactItem{\textbf{Programming with JavaScript} -- 2026}
-    \resumeCompactItem{\textbf{Certified in Java Language} -- Acube Tech Skills, Mysuru, India}
-  \end{itemize}
-\vspace{-10pt}
+#### State
+- Top 10 states by number of orders
+- Top 10 states by total sales amount
 
-%-----------ACHIEVEMENTS \& INVOLVEMENT-----------
-\section{Hackathons \& Achievements}
-  \begin{itemize}[leftmargin=0.15in, label={}, itemsep=-2pt]
-    \resumeCompactItem{\textbf{Innovostava 2026} -- Runner-up}
-    \resumeCompactItem{\textbf{Hackverse 2025} -- Participant}
-    \resumeCompactItem{\textbf{ARGHYA -- Empowering Engineers with Next-Gen AI Tools} -- Participant}
-    \resumeCompactItem{\textbf{Be10x AI Tools Workshop} -- Attendee}
-  \end{itemize}
-\vspace{-10pt}
+#### Marital Status
+- Count plot of marital status
+- Sales amount by marital status, split by gender
 
-%-----------LANGUAGES \& INTERESTS-----------
-\section{Languages \& Interests}
- \begin{itemize}[leftmargin=0.15in, label={}]
-    \small{\item{
-     \textbf{Languages}{: English (Professional), Kannada (Native), Hindi (Limited Working)} \\
-     \textbf{Interests}{: Cricket, Kabaddi, Open Source Contribution} \\
-    }}
- \end{itemize}
+#### Occupation
+- Count plot of buyers by occupation
+- Total sales amount by occupation
 
-\end{document}
+#### Product Category
+- Count plot by product category
+- Total sales amount by product category
+
+#### Top Products
+- Top 10 products by number of orders (by `Product_ID`)
+
+---
+
+## How to Run
+
+1. Upload `Diwali Sales Data.csv` to `/content/` (Google Colab) or update the file path.
+2. Open `project_on_data_explorator1.ipynb` in Jupyter Notebook or Google Colab.
+3. Run all cells from top to bottom (`Runtime → Run all` in Colab).
+
+### Requirements
+
+```bash
+pip install numpy pandas matplotlib seaborn
+```
+
+---
+
+## Key Insights (from analysis)
+
+- **Female buyers** tend to purchase more and spend more than male buyers.
+- **Age group 26–35** is the most active purchasing segment.
+- **Uttar Pradesh, Maharashtra, and Karnataka** lead in both orders and revenue.
+- **Married women** show higher spending compared to other groups.
+- **IT, Healthcare, and Aviation** professionals are top spenders by occupation.
+- **Food, Clothing, and Electronics** are the highest-selling product categories.
+
+---
+
+## Author
+
+Student project on Data Exploration using Python and Seaborn.
