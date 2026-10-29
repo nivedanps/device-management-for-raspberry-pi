@@ -1,0 +1,23 @@
+{
+  "server_url": "http://127.0.0.1:8090",
+  "allow_insecure_http": false,
+  "token": "change-me",
+  "device_id": null,
+  "interval_s": 60,
+  "software_every_s": 600,
+  "request_timeout_s": 10,
+  "claimed": { "product": "SchoolAI in a Box", "site_code": "eps_koorgalli", "customer": null },
+  "services": {
+    "app_live_url": "http://127.0.0.1:8000/health/live",
+    "app_ready_url": "http://127.0.0.1:8000/health/ready",
+    "postgres": "127.0.0.1:5426",
+    "vllm_url": null,
+    "ollama_url": null
+  },
+  "systemd_units": ["nginx.service", "docker.service", "saras-sync.service", "jtop.service"],
+  "sync_state_dir": "/opt/saras-sync/state",
+  "ping_gateway": true,
+  "docker": true,
+  "buffer_path": "/var/lib/saras-agent/buffer.db",
+  "buffer_max_rows": 20000
+}

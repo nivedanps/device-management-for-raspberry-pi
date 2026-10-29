@@ -1,0 +1,74 @@
+# SARAS fleet server (heartbeat API, alert engine, dashboard) - systemd unit.
+# Installed by `sudo server/install-server.sh` as /etc/systemd/system/fleet-server.service.
+#
+# What the installer does, as manual steps (run as root):
+#   useradd --system --no-create-home --shell /usr/sbin/nologin saras-fleet
+#   install -d /opt/saras-fleet && cp -r device-management/server /opt/saras-fleet/
+#   install -d -m 0750 -o root -g saras-fleet /etc/saras-fleet
+#   install -m 0640 -o root -g saras-fleet server.example.json /etc/saras-fleet/server.json
+#   Edit /etc/saras-fleet/server.json:
+#     - set real fleet_token and admin_token (e.g. `openssl rand -hex 32`); the server refuses
+#       to start with the example placeholders
+#     - set dashboard_user and dashboard_password, so the dashboard and read API need a password
+#     - set "db_path": "/var/lib/saras-fleet/fleet.db"  (relative paths resolve against
+#       /etc/saras-fleet, which is read-only for the service)
+#     - set "archive_dir": "/var/lib/saras-fleet/heartbeats"  (plain-text day files per box;
+#       null turns them off)
+#     - behind nginx, add its server_name to "allowed_hosts" (the dashboard answers only
+#       IP addresses, localhost and the names listed there)
+#   systemctl daemon-reload && systemctl enable --now fleet-server.service
+#
+# The server binds 127.0.0.1 by default. To let other boxes reach it, keep that bind and put
+# nginx with TLS in front of it (CONTRACT.md section 9); do not expose port 8090 directly.
+
+[Unit]
+Description=SARAS fleet server (device monitoring API and dashboard)
+Documentation=file:///opt/saras-fleet/server/fleet_server.py
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=saras-fleet
+Group=saras-fleet
+ExecStart=/usr/bin/python3 /opt/saras-fleet/server/fleet_server.py --config /etc/saras-fleet/server.json
+WorkingDirectory=/var/lib/saras-fleet
+StateDirectory=saras-fleet
+StateDirectoryMode=0750
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=20
+KillSignal=SIGTERM
+Environment=PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1
+
+# Hardening: the server only needs its state directory, its config and a TCP socket.
+UMask=0077
+NoNewPrivileges=yes
+CapabilityBoundingSet=
+AmbientCapabilities=
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+ProtectHostname=yes
+ProtectProc=invisible
+ProcSubset=pid
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictNamespaces=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+RemoveIPC=yes
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+SystemCallFilter=~@privileged @resources
+SystemCallErrorNumber=EPERM
+
+[Install]
+WantedBy=multi-user.target

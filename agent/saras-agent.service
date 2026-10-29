@@ -1,0 +1,70 @@
+# SARAS device-management agent: one heartbeat per interval to the fleet server.
+# Installed by install-agent.sh as /etc/systemd/system/saras-agent.service.
+#
+# Runs as root because the Docker socket and the DMI serial number need it, but root with a
+# single capability: CAP_NET_RAW, for the gateway ping. These boxes disable unprivileged ICMP
+# sockets (net.ipv4.ping_group_range = 1 0), and NoNewPrivileges=yes stops ping from getting the
+# capability from its file capability. Everything the agent reads is owned by root or readable by
+# everyone, so it needs no DAC override. The whole file system is read-only to it except its
+# state directory, and system calls are limited to @system-service. The agent only reads: it
+# never changes the box.
+# Checked without root: under this system call filter and these address families, `--once` as
+# a normal user collects exactly what it collects without them. Check a root run too before a
+# fleet roll-out: Docker, the DMI serial, ping, nvpmodel, journalctl --disk-usage.
+# Not enabled on purpose: PrivateDevices (hides the GPU from NVML), ProtectKernelTunables (vendor
+# tools such as nvpmodel have not been verified under it yet) and ProtectClock (it implies a
+# device allow-list, which could hide the GPU too; setting the clock is already impossible
+# without CAP_SYS_TIME).
+
+[Unit]
+Description=SARAS device-management agent (fleet heartbeat)
+Wants=network-online.target
+After=network-online.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=notify
+NotifyAccess=main
+User=root
+ExecStart=/usr/bin/python3 /opt/saras-agent/saras_agent.py --config /etc/saras-agent/agent.json
+Environment=PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1
+Restart=always
+RestartSec=10
+# The agent sends WATCHDOG=1 every loop and at least every 90 s while it sleeps.
+WatchdogSec=180
+TimeoutStartSec=60
+TimeoutStopSec=30
+
+# Monitoring must never compete with the school application.
+CPUQuota=10%
+MemoryMax=200M
+TasksMax=64
+Nice=10
+
+# Hardening
+NoNewPrivileges=yes
+CapabilityBoundingSet=CAP_NET_RAW
+AmbientCapabilities=
+# strict: everything read-only; StateDirectory= keeps /var/lib/saras-agent (the buffer) writable.
+ProtectSystem=strict
+ProtectHome=read-only
+PrivateTmp=yes
+StateDirectory=saras-agent
+StateDirectoryMode=0700
+UMask=0077
+ProtectHostname=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+RestrictRealtime=yes
+RestrictNamespaces=yes
+LockPersonality=yes
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+SystemCallErrorNumber=EPERM
+# AF_NETLINK: interface addresses and `iw`; AF_UNIX: Docker, systemd, D-Bus; AF_INET*: probes, ping, server.
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6 AF_NETLINK
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,15 @@
+{
+  "bind": "127.0.0.1",
+  "port": 8090,
+  "db_path": "./fleet.db",
+  "fleet_token": "change-me",
+  "device_tokens": {},
+  "admin_token": "change-me-too",
+  "dashboard_user": null,
+  "dashboard_password": null,
+  "retention_days": 30,
+  "offline_after_missed": 3,
+  "offline_min_s": 90,
+  "archive_dir": null,
+  "allowed_hosts": []
+}

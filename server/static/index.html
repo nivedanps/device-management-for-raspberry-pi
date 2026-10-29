@@ -1,0 +1,547 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Fleet · SARAS</title>
+<link rel="stylesheet" href="static/style.css">
+<script src="static/app.js" defer></script>
+</head>
+<body>
+<a class="skip-link" id="skip-link" href="#main">Skip to main content</a>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="#/"><span class="brand-name">SARAS</span><span class="brand-divider" aria-hidden="true"></span><span class="brand-product">Fleet monitor</span></a>
+    <p class="live" id="live" data-state="pending"><span class="live-dot" aria-hidden="true"></span><span id="live-text">Connecting…</span></p>
+  </div>
+</header>
+
+<div class="sr-only" id="announcer" aria-live="polite"></div>
+
+<main id="main" tabindex="-1">
+  <p class="banner" id="banner" hidden></p>
+
+  <!-- Fleet view: #/ -->
+  <section class="view" id="view-fleet" aria-labelledby="fleet-title">
+    <div class="page-head">
+      <h1 id="fleet-title" tabindex="-1">Fleet</h1>
+      <p class="page-sub">Every school box that reports to this server. Updates every 5 seconds while this tab is open.</p>
+    </div>
+
+    <div class="counts" id="counts" role="group" aria-label="Devices by status. Choose one to show only those devices.">
+      <button type="button" class="count" data-state="" aria-pressed="true">
+        <span class="count-label">Total</span><span class="count-value" id="count-total">—</span>
+      </button>
+      <button type="button" class="count" data-state="online" aria-pressed="false">
+        <span class="count-label"><span class="glyph online" aria-hidden="true"></span>Online</span><span class="count-value" id="count-online">—</span>
+      </button>
+      <button type="button" class="count" data-state="warning" aria-pressed="false">
+        <span class="count-label"><span class="glyph warning" aria-hidden="true"></span>Warning</span><span class="count-value" id="count-warning">—</span>
+      </button>
+      <button type="button" class="count" data-state="critical" aria-pressed="false">
+        <span class="count-label"><span class="glyph critical" aria-hidden="true"></span>Critical</span><span class="count-value" id="count-critical">—</span>
+      </button>
+      <button type="button" class="count" data-state="offline" aria-pressed="false">
+        <span class="count-label"><span class="glyph offline" aria-hidden="true"></span>Offline</span><span class="count-value" id="count-offline">—</span>
+      </button>
+    </div>
+
+    <section class="card" aria-labelledby="devices-title">
+      <div class="card-head">
+        <h2 id="devices-title">Devices</h2>
+        <p class="meta" id="fleet-count"></p>
+      </div>
+
+      <form class="filters" id="filters" role="search" aria-label="Filter devices">
+        <div class="field">
+          <label for="f-status">Status</label>
+          <select id="f-status">
+            <option value="">All statuses</option>
+            <option value="online">Online</option>
+            <option value="warning">Warning</option>
+            <option value="critical">Critical</option>
+            <option value="offline">Offline</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="f-type">Device type</label>
+          <select id="f-type"><option value="">All types</option></select>
+        </div>
+        <div class="field">
+          <label for="f-product">Product</label>
+          <select id="f-product"><option value="">All products</option></select>
+        </div>
+        <div class="field field-search">
+          <label for="f-search">Search</label>
+          <input type="search" id="f-search" autocomplete="off" spellcheck="false" placeholder="ID, host name, site, alert…">
+        </div>
+        <button type="button" class="btn" id="f-clear" disabled>Clear filters</button>
+      </form>
+
+      <div class="tscroll" id="fleet-table-wrap">
+        <table class="rtable stack fleet-table" role="table">
+          <caption class="sr-only">Devices, one row each. Select a device to open its details.</caption>
+          <thead role="rowgroup">
+            <tr role="row">
+              <th role="columnheader" scope="col" data-sort="state"><button type="button" class="sort">Status</button></th>
+              <th role="columnheader" scope="col" data-sort="device"><button type="button" class="sort">Device</button></th>
+              <th role="columnheader" scope="col" data-sort="type"><button type="button" class="sort">Type</button></th>
+              <th role="columnheader" scope="col" data-sort="product"><button type="button" class="sort">Product</button></th>
+              <th role="columnheader" scope="col" data-sort="app"><button type="button" class="sort">App</button></th>
+              <th role="columnheader" scope="col" data-sort="site"><button type="button" class="sort">Site</button></th>
+              <th role="columnheader" scope="col" class="num" data-sort="seen"><button type="button" class="sort">Last seen</button></th>
+              <th role="columnheader" scope="col" class="num" data-sort="cpu"><button type="button" class="sort">CPU</button></th>
+              <th role="columnheader" scope="col" class="num" data-sort="gpu"><button type="button" class="sort">GPU</button></th>
+              <th role="columnheader" scope="col" class="num" data-sort="temp"><button type="button" class="sort">Hottest</button></th>
+              <th role="columnheader" scope="col" class="num" data-sort="ram"><button type="button" class="sort">RAM</button></th>
+              <th role="columnheader" scope="col" class="num" data-sort="disk"><button type="button" class="sort">Disk</button></th>
+              <th role="columnheader" scope="col" class="num" data-sort="power"><button type="button" class="sort">Power</button></th>
+            </tr>
+          </thead>
+          <tbody id="fleet-rows" role="rowgroup"></tbody>
+        </table>
+      </div>
+
+      <div class="empty" id="fleet-empty" hidden>
+        <p class="empty-title" id="fleet-empty-title"></p>
+        <p class="empty-text" id="fleet-empty-text"></p>
+        <button type="button" class="btn" id="fleet-empty-clear" hidden>Clear filters</button>
+      </div>
+    </section>
+
+    <section class="card" aria-labelledby="fleet-schedules-title" id="section-fleet-schedules">
+      <div class="card-head">
+        <h2 id="fleet-schedules-title">Scheduled Updates & Maintenance Windows</h2>
+        <span class="count-pill" id="fleet-schedules-count">0</span>
+      </div>
+      <p class="meta">Automated maintenance tasks queued for dispatch across the fleet.</p>
+      <div class="tscroll" id="schedules-wrap">
+        <table class="rtable stack schedules-table" role="table">
+          <caption class="sr-only">Scheduled updates across the fleet</caption>
+          <thead role="rowgroup">
+            <tr role="row">
+              <th role="columnheader" scope="col">Schedule ID</th>
+              <th role="columnheader" scope="col">Name</th>
+              <th role="columnheader" scope="col">Device ID</th>
+              <th role="columnheader" scope="col">Operation</th>
+              <th role="columnheader" scope="col">Scheduled Time</th>
+              <th role="columnheader" scope="col">Maintenance Window</th>
+              <th role="columnheader" scope="col">Status</th>
+              <th role="columnheader" scope="col">Action</th>
+            </tr>
+          </thead>
+          <tbody id="schedules-rows" role="rowgroup"></tbody>
+        </table>
+      </div>
+      <p class="empty-inline" id="schedules-empty" hidden>No scheduled updates active at this time.</p>
+    </section>
+  </section>
+
+  <!-- Device view: #/device/<id> -->
+  <section class="view" id="view-device" aria-labelledby="device-title" hidden>
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="#/">Fleet</a></li>
+        <li><span aria-current="page" id="crumb-current">Device</span></li>
+      </ol>
+    </nav>
+
+    <div class="card device-head">
+      <div class="title-row">
+        <h1 id="device-title" tabindex="-1">Device</h1>
+        <span class="pill pill-lg" id="device-state" hidden></span>
+      </div>
+      <p class="page-sub" id="device-sub"></p>
+      <dl class="facts" id="device-facts">
+        <div><dt>Last seen</dt><dd id="d-seen">—</dd></div>
+        <div><dt>Up for</dt><dd id="d-uptime">—</dd></div>
+        <div><dt>Heartbeat</dt><dd id="d-interval">—</dd></div>
+        <div><dt>Clock</dt><dd id="d-clock">—</dd></div>
+        <div><dt>LAN IP</dt><dd id="d-ip">—</dd></div>
+        <div><dt>Agent</dt><dd id="d-agent">—</dd></div>
+        <div><dt>App</dt><dd id="d-app-ver">—</dd></div>
+      </dl>
+      <p class="note" id="collector-note" hidden><span class="note-mark" aria-hidden="true">i</span><span id="collector-text"></span></p>
+    </div>
+
+    <div class="device-sections" id="device-sections">
+      <section class="card" aria-labelledby="alerts-title">
+        <div class="card-head">
+          <h2 id="alerts-title">Open alerts</h2>
+          <span class="count-pill" id="alerts-count">0</span>
+        </div>
+        <ul class="alert-list" id="alert-list"></ul>
+        <p class="empty-inline" id="alerts-empty" hidden>No open alerts. Every check on this box is within its limits.</p>
+      </section>
+
+      <section class="charts-section" aria-labelledby="charts-title">
+        <div class="section-head">
+          <div class="section-title">
+            <h2 id="charts-title">Last 60 minutes</h2>
+            <p class="meta" id="charts-meta"></p>
+          </div>
+          <div class="segmented" id="range" role="group" aria-label="Time range for the charts">
+            <button type="button" data-minutes="60" aria-pressed="true">1 h</button>
+            <button type="button" data-minutes="360" aria-pressed="false">6 h</button>
+            <button type="button" data-minutes="1440" aria-pressed="false">24 h</button>
+            <button type="button" data-minutes="10080" aria-pressed="false">7 d</button>
+          </div>
+        </div>
+        <div class="charts" id="charts"></div>
+        <details class="card readings" id="readings">
+          <summary>Show the readings as a table</summary>
+          <div class="tscroll">
+            <table class="rtable readings-table">
+              <caption class="sr-only">Readings in the chosen time range, newest first</caption>
+              <thead><tr id="readings-head"></tr></thead>
+              <tbody id="readings-rows"></tbody>
+            </table>
+          </div>
+          <p class="meta readings-meta" id="readings-meta"></p>
+        </details>
+      </section>
+
+      <section class="card" aria-labelledby="avail-title">
+        <div class="card-head">
+          <h2 id="avail-title">Data availability (last 30 days)</h2>
+          <p class="meta" id="avail-meta"></p>
+        </div>
+        <div class="tscroll">
+          <table class="rtable avail-table">
+            <caption class="sr-only">Readings stored per day, newest first, with a coverage bar from midnight to midnight</caption>
+            <thead>
+              <tr>
+                <th scope="col">Day</th>
+                <th scope="col" class="num">Readings</th>
+                <th scope="col">First</th>
+                <th scope="col">Last</th>
+                <th scope="col">Coverage, 00:00 to 24:00 (green = recorded, grey = nothing)</th>
+              </tr>
+            </thead>
+            <tbody id="avail-rows"></tbody>
+          </table>
+        </div>
+        <p class="empty-inline" id="avail-empty" hidden>No readings are stored for this box yet.</p>
+        <h3 class="sub-title">When nothing was recorded</h3>
+        <ul class="gap-list" id="gap-list"></ul>
+        <p class="empty-inline" id="gaps-empty" hidden>No gaps: readings arrived without a break.</p>
+      </section>
+
+      <section class="card" aria-labelledby="raw-title">
+        <div class="card-head">
+          <h2 id="raw-title">Stored readings (full details)</h2>
+          <p class="meta" id="raw-meta"></p>
+        </div>
+        <div class="raw-controls">
+          <label for="raw-day">Day</label>
+          <select id="raw-day"></select>
+          <label for="raw-time">Reading</label>
+          <select id="raw-time"></select>
+          <button type="button" id="raw-latest">Show the latest reading</button>
+        </div>
+        <pre class="raw-json" id="raw-json" tabindex="0" aria-label="The selected reading, every field"></pre>
+      </section>
+
+      <div class="grid-2">
+        <section class="card" aria-labelledby="services-title">
+          <div class="card-head">
+            <h2 id="services-title">Services</h2>
+            <p class="meta" id="services-meta"></p>
+          </div>
+          <div class="tscroll" id="services-wrap">
+            <table class="rtable stack services-table" role="table">
+              <caption class="sr-only">Service checks from the latest heartbeat</caption>
+              <thead role="rowgroup">
+                <tr role="row">
+                  <th role="columnheader" scope="col">Service</th>
+                  <th role="columnheader" scope="col">Status</th>
+                  <th role="columnheader" scope="col" class="num">Latency</th>
+                  <th role="columnheader" scope="col" class="num">Restarts</th>
+                  <th role="columnheader" scope="col" class="num">Available (24 h)</th>
+                  <th role="columnheader" scope="col">Detail</th>
+                </tr>
+              </thead>
+              <tbody id="services-rows" role="rowgroup"></tbody>
+            </table>
+          </div>
+          <p class="empty-inline" id="services-empty" hidden>No service checks reported yet.</p>
+        </section>
+
+        <section class="card" aria-labelledby="sync-title">
+          <div class="card-head">
+            <h2 id="sync-title">Backup and sync</h2>
+            <span class="pill" id="sync-state" hidden></span>
+          </div>
+          <dl class="kv" id="sync-kv"></dl>
+          <p class="meta sync-note" id="sync-note" hidden></p>
+          <p class="empty-inline" id="sync-empty" hidden>This box doesn't report saras-sync state.</p>
+        </section>
+      </div>
+
+      <div class="grid-2">
+        <section class="card" aria-labelledby="now-title">
+          <div class="card-head">
+            <h2 id="now-title">Current readings</h2>
+            <p class="meta" id="now-meta"></p>
+          </div>
+          <div class="groups" id="now-groups"></div>
+        </section>
+
+        <section class="card" aria-labelledby="about-title">
+          <div class="card-head">
+            <h2 id="about-title">Identity and versions</h2>
+          </div>
+          <div class="groups groups-single" id="about-groups"></div>
+        </section>
+      </div>
+
+      <section class="card" aria-labelledby="events-title">
+        <div class="card-head">
+          <h2 id="events-title">Recent events</h2>
+          <p class="meta">Newest first, up to 50</p>
+        </div>
+        <div class="tscroll" id="events-wrap">
+          <table class="rtable stack events-table" role="table">
+            <caption class="sr-only">Alerts and events for this device, newest first</caption>
+            <thead role="rowgroup">
+              <tr role="row">
+                <th role="columnheader" scope="col" id="events-time-head">Time</th>
+                <th role="columnheader" scope="col">Type</th>
+                <th role="columnheader" scope="col">Event</th>
+                <th role="columnheader" scope="col">State</th>
+              </tr>
+            </thead>
+            <tbody id="events-rows" role="rowgroup"></tbody>
+          </table>
+        </div>
+        <p class="empty-inline" id="events-empty" hidden>No events recorded yet.</p>
+      </section>
+
+      <section class="card" aria-labelledby="config-title" id="section-config">
+        <div class="card-head">
+          <h2 id="config-title">Effective Configuration</h2>
+          <div class="config-actions">
+            <span class="meta" id="config-version">Version 0</span>
+            <button type="button" class="btn btn-sm btn-primary" id="btn-edit-config">Edit Configuration</button>
+          </div>
+        </div>
+        <div class="groups groups-single" id="config-groups"></div>
+        <p class="empty-inline" id="config-empty" hidden>No remote configuration overrides applied (using defaults).</p>
+
+        <!-- Configuration Editor Drawer -->
+        <div class="card subcard form-card" id="config-editor-wrap" hidden>
+          <div class="card-head">
+            <h3 id="config-editor-title">Configuration Management</h3>
+            <button type="button" class="btn btn-sm" id="btn-close-config">Close Editor</button>
+          </div>
+          <form class="config-form" id="config-editor-form">
+            <div class="form-grid">
+              <div class="field">
+                <label for="cfg-scope-type">Scope Level</label>
+                <select id="cfg-scope-type">
+                  <option value="device">Device Specific</option>
+                  <option value="school">School / Site Specific</option>
+                  <option value="org">Organization (Customer)</option>
+                  <option value="default">Global Default</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="cfg-scope-id">Scope Identifier</label>
+                <input type="text" id="cfg-scope-id" readonly>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="cfg-json-editor">Configuration JSON (Validated)</label>
+              <textarea id="cfg-json-editor" rows="10" spellcheck="false" class="code-editor"></textarea>
+              <span class="field-hint" id="cfg-rev-preview">Computed Revision Hash: —</span>
+            </div>
+
+            <div class="field">
+              <label for="cfg-admin-token">Admin Bearer Token</label>
+              <input type="password" id="cfg-admin-token" placeholder="Enter admin token to authorize" required>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary" id="btn-save-config">Save & Apply Changes</button>
+              <button type="button" class="btn btn-danger" id="btn-delete-config">Reset Scope to Inherited</button>
+              <span class="status-msg" id="cfg-status-msg" aria-live="polite"></span>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="hw-diag-title" id="section-hw-diagnostics">
+        <div class="card-head">
+          <h2 id="hw-diag-title">Hardware Failure Detection & Diagnostics</h2>
+          <span class="pill" id="hw-diag-status">Checking…</span>
+        </div>
+        <p class="meta">Continuous telemetry diagnostics for NVMe storage, memory ECC/EDAC controllers, and cooling fans.</p>
+        <div class="diag-grid" id="hw-diag-grid">
+          <div class="diag-card" id="diag-storage">
+            <div class="diag-head">
+              <span class="diag-icon" aria-hidden="true">💾</span>
+              <h3>Storage Health (NVMe SMART)</h3>
+              <span class="pill" id="diag-storage-pill">Healthy</span>
+            </div>
+            <dl class="kv" id="diag-storage-kv">
+              <div><dt>Critical Warning</dt><dd id="diag-storage-crit">None</dd></div>
+              <div><dt>Available Spare</dt><dd id="diag-storage-spare">—</dd></div>
+              <div><dt>Wear / Life Used</dt><dd id="diag-storage-wear">—</dd></div>
+              <div><dt>Media Errors</dt><dd id="diag-storage-media">0</dd></div>
+            </dl>
+          </div>
+          <div class="diag-card" id="diag-memory">
+            <div class="diag-head">
+              <span class="diag-icon" aria-hidden="true">🧠</span>
+              <h3>Memory Controller (ECC / EDAC)</h3>
+              <span class="pill" id="diag-memory-pill">Healthy</span>
+            </div>
+            <dl class="kv" id="diag-memory-kv">
+              <div><dt>EDAC Support</dt><dd id="diag-mem-support">Active</dd></div>
+              <div><dt>Uncorrectable (UE)</dt><dd id="diag-mem-ue">0 errors</dd></div>
+              <div><dt>Correctable (CE)</dt><dd id="diag-mem-ce">0 errors</dd></div>
+            </dl>
+          </div>
+          <div class="diag-card" id="diag-fan">
+            <div class="diag-head">
+              <span class="diag-icon" aria-hidden="true">🌀</span>
+              <h3>Cooling & Fan Monitor</h3>
+              <span class="pill" id="diag-fan-pill">Normal</span>
+            </div>
+            <dl class="kv" id="diag-fan-kv">
+              <div><dt>Fan Speed</dt><dd id="diag-fan-rpm">—</dd></div>
+              <div><dt>Stall Status</dt><dd id="diag-fan-stall">Not Stalled</dd></div>
+              <div><dt>Throttling</dt><dd id="diag-fan-throttled">Normal</dd></div>
+            </dl>
+          </div>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="updates-title" id="section-update-jobs">
+        <div class="card-head">
+          <h2 id="updates-title">Remote Update Jobs</h2>
+          <button type="button" class="btn btn-primary" id="btn-open-dispatch">+ Create Update Job</button>
+        </div>
+        <p class="meta">Controlled lifecycle execution: verification, execution, and rollback reporting.</p>
+
+        <!-- Dispatch / Schedule Job Form (toggled) -->
+        <div class="card subcard form-card" id="dispatch-form-wrap" hidden>
+          <div class="card-head">
+            <h3 id="dispatch-form-title">Dispatch or Schedule Remote Update</h3>
+            <button type="button" class="btn btn-sm" id="btn-close-dispatch">Cancel</button>
+          </div>
+          <form class="update-form" id="update-dispatch-form">
+            <div class="form-grid">
+              <div class="field">
+                <label for="update-op">Operation Type</label>
+                <select id="update-op" required>
+                  <option value="app_update">Application / Docker Image Update</option>
+                  <option value="os_update">Operating System & Package Updates</option>
+                  <option value="firmware_update">Firmware / Bootloader Update</option>
+                  <option value="config_update">Configuration Sync & Apply</option>
+                  <option value="health_check">On-Demand Diagnostic Health Probe</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="update-target-ver">Target Version / Image Ref</label>
+                <input type="text" id="update-target-ver" placeholder="e.g. 1.4.2 or rapiddev-app:latest">
+              </div>
+              <div class="field">
+                <label for="update-schedule-time">Schedule Execution (Optional)</label>
+                <input type="datetime-local" id="update-schedule-time">
+                <span class="field-hint">Leave blank to dispatch on the next device heartbeat.</span>
+              </div>
+              <div class="field">
+                <label for="update-maint-window">Maintenance Window (Optional)</label>
+                <input type="text" id="update-maint-window" placeholder="e.g. 02:00-05:00">
+              </div>
+            </div>
+            <div class="field-checkbox">
+              <label>
+                <input type="checkbox" id="update-dry-run" checked>
+                <span>Safety / Dry-Run Mode (Preflight verification without disruptive flashing)</span>
+              </label>
+            </div>
+            <div class="field">
+              <label for="update-admin-token">Admin Bearer Token</label>
+              <input type="password" id="update-admin-token" placeholder="Enter admin token to authorize" required>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary" id="btn-submit-job">Submit Update Job</button>
+              <span class="status-msg" id="dispatch-status-msg" aria-live="polite"></span>
+            </div>
+          </form>
+        </div>
+
+        <div class="tscroll" id="jobs-wrap">
+          <table class="rtable stack jobs-table" role="table">
+            <caption class="sr-only">Remote update jobs for this device</caption>
+            <thead role="rowgroup">
+              <tr role="row">
+                <th role="columnheader" scope="col">Job ID</th>
+                <th role="columnheader" scope="col">Operation</th>
+                <th role="columnheader" scope="col">Target</th>
+                <th role="columnheader" scope="col">Status</th>
+                <th role="columnheader" scope="col">Progress</th>
+                <th role="columnheader" scope="col">Created</th>
+                <th role="columnheader" scope="col">Message / Details</th>
+                <th role="columnheader" scope="col">Action</th>
+              </tr>
+            </thead>
+            <tbody id="jobs-rows" role="rowgroup"></tbody>
+          </table>
+        </div>
+        <p class="empty-inline" id="jobs-empty" hidden>No update jobs dispatched for this device yet.</p>
+      </section>
+
+      <section class="card" aria-labelledby="logs-title" id="section-logs">
+        <div class="card-head">
+          <h2 id="logs-title">Recent Device Logs</h2>
+          <div class="log-filters">
+            <select id="log-cat-filter" aria-label="Filter logs by category">
+              <option value="">All categories</option>
+              <option value="APPLICATION">APPLICATION</option>
+              <option value="API">API</option>
+              <option value="SYNC">SYNC</option>
+              <option value="SYSTEM">SYSTEM</option>
+              <option value="AI">AI</option>
+              <option value="SECURITY">SECURITY</option>
+              <option value="UPDATE">UPDATE</option>
+            </select>
+            <select id="log-sev-filter" aria-label="Filter logs by severity">
+              <option value="">All severities</option>
+              <option value="info">Info</option>
+              <option value="warning">Warning</option>
+              <option value="error">Error</option>
+              <option value="critical">Critical</option>
+            </select>
+          </div>
+        </div>
+        <div class="tscroll" id="logs-wrap">
+          <table class="rtable stack logs-table" role="table">
+            <caption class="sr-only">Device logs, newest first</caption>
+            <thead role="rowgroup">
+              <tr role="row">
+                <th role="columnheader" scope="col">Time</th>
+                <th role="columnheader" scope="col">Service</th>
+                <th role="columnheader" scope="col">Category</th>
+                <th role="columnheader" scope="col">Severity</th>
+                <th role="columnheader" scope="col">Message</th>
+              </tr>
+            </thead>
+            <tbody id="logs-rows" role="rowgroup"></tbody>
+          </table>
+        </div>
+        <p class="empty-inline" id="logs-empty" hidden>No logs recorded for this device yet.</p>
+      </section>
+    </div>
+  </section>
+
+</main>
+
+<noscript><p class="noscript">This dashboard needs JavaScript to load its data.</p></noscript>
+</body>
+</html>

@@ -1,0 +1,15 @@
+{
+  "bind": "127.0.0.1",
+  "port": 8090,
+  "db_path": "../data/fleet.db",
+  "fleet_token": "dev-fleet-token",
+  "device_tokens": {},
+  "admin_token": "dev-admin-token",
+  "dashboard_user": null,
+  "dashboard_password": null,
+  "retention_days": 30,
+  "offline_after_missed": 3,
+  "offline_min_s": 90,
+  "archive_dir": "../data/heartbeats",
+  "allowed_hosts": []
+}
